@@ -28,6 +28,7 @@ class Like(models.Model):
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name = 'comments', verbose_name="Commenter")
     tweet = models.ForeignKey(Tweet,on_delete=models.CASCADE,related_name='comments',verbose_name='Commented Tweet')
+    parent_comment = models.ForeignKey('self',on_delete=models.CASCADE,null=True,blank=True, related_name='replies')
     content = models.TextField(verbose_name='Comment Content')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Commented At')
     
