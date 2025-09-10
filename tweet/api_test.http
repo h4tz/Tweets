@@ -1,0 +1,63 @@
+@host = http://127.0.0.1:8000
+
+### Request 1: Register a new user
+POST {{host}}/api/register/
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+### Request 2: Log in to get JWT tokens
+# @name login
+POST {{host}}/api/login/
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+### Extract access token into variable
+@jwt_token = {{login.response.body.access}}
+
+### Request 3: Create a new tweet
+POST {{host}}/api/tweets/
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "content": "This is my first tweet!"
+}
+
+### Request 4: Get a paginated list of all tweets
+GET {{host}}/api/tweets/
+Accept: application/json
+
+### Request 5: Like a tweet
+POST {{host}}/api/tweets/1/like/
+Authorization: Bearer {{jwt_token}}
+
+### Request 6: Comment on a tweet
+POST {{host}}/api/tweets/1/comments/
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "content": "Great tweet!"
+}
+
+### Request 7: Follow a user
+POST {{host}}/api/users/2/follow/
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+### Request 8: Get details of a single tweet
+GET {{host}}/api/tweets/1/
+Accept: application/json
+
+### Request 9: Unfollow a user (toggle follow)
+POST {{host}}/api/users/2/follow/
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}

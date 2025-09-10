@@ -16,7 +16,7 @@ class Tweet(models.Model):
 
 class Like(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='likes',verbose_name='Liker')
-    tweet = models.ForeignKey(Tweet,on_delete=models.CASCADE,related_mame='likes',verbose_name='Liked Tweet')
+    tweet = models.ForeignKey(Tweet,on_delete=models.CASCADE,related_name='likes',verbose_name='Liked Tweet')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Liked At')
     
     def __str__(self):
