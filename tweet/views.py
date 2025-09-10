@@ -12,6 +12,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.pagination import CursorPagination
 
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -66,6 +67,7 @@ class LoginView(APIView):
 class TweetListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = TweetSerialzier
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_classes = CursorPagination
     
     def get_queryset(self):
         return Tweet.objects.all().order_by('-created_at')
@@ -94,6 +96,7 @@ class LikeToggleAPIView(APIView):
 class CommentListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = CommentSerialzier
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = CursorPagination
     
     def get_queryset(self):
         tweet_id = self.kwargs['tweet_id']
