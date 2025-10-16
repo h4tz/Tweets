@@ -20,7 +20,7 @@ Content-Type: application/json
 }
 
 ### Extract access token into variable
-@jwt_token = {{login.response.body.access}}
+@jwt_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwNjQyMDU1LCJpYXQiOjE3NjA2NDE3NTUsImp0aSI6IjBiZDFlNTkzNzQ3ZTRmNWE5NGZlZTVmOGExOWJmYjZmIiwidXNlcl9pZCI6IjUyIn0.YXpsq74PXBjw5IQt48GSZNMFKOz8ZZ5R52djgwHR8M8
 
 ### Request 3: Create a new tweet
 POST {{host}}/api/tweets/
