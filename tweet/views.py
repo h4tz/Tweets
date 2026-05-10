@@ -3,21 +3,23 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from django.db.models import Prefetch
-
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
-from django.db import IntegrityError
 
 
 from .pagination import CustomCursorPagination
-from .models import Tweet, Like, Comment, Follow 
+from .models import Tweet
 from .serializers import (
     TweetSerializer,
-    LikeSerializer,
     CommentSerializer,
-    FollowSerializer,
     UserSerializer,
+)
+from .services import (
+    AuthService,
+    CommentService,
+    FollowService,
+    FollowYourselfError,
+    LikeService,
+    TweetService,
 )
 
 User = get_user_model()
@@ -66,7 +68,7 @@ class LoginView(APIView):
         password = request.data.get('password')
         
         try:
-            user = get_object_or_404(User, username=username)
+            user = AuthService.get_user_for_login(username=username)
         except Exception:
             return Response({'detail': 'User not found.'}, status = status.HTTP_404_NOT_FOUND)
         
@@ -92,7 +94,7 @@ class TweetListCreateAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         print("TweetListCreateAPIView: Fetching all tweets.")
-        queryset = Tweet.objects.all().order_by('-created_at')
+        queryset = TweetService.list_tweets()
         print(f"TweetListCreateAPIView: Queryset contains {queryset.count()} tweets.")
         return queryset
     
@@ -114,11 +116,9 @@ class LikeToggleAPIView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     
     def post(self, request, tweet_id):
-        tweet = get_object_or_404(Tweet, id=tweet_id)
-        like, created = Like.objects.get_or_create(user=request.user, tweet=tweet)
-        
-        if not created:
-            like.delete()
+        is_liked = LikeService.toggle_like(user=request.user, tweet_id=tweet_id)
+
+        if not is_liked:
             return Response(status=status.HTTP_204_NO_CONTENT)
         
         return Response({'detail': 'Tweet Liked'}, status=status.HTTP_201_CREATED)
@@ -134,13 +134,13 @@ class CommentListCreateAPIView(generics.ListCreateAPIView):
     def get_queryset(self):
         print("CommentListCreateAPIView: Fetching comments for a tweet.")
         tweet_id = self.kwargs['tweet_id']
-        queryset = Comment.objects.filter(tweet_id=tweet_id).order_by('-created_at')
+        queryset = CommentService.list_comments_by_tweet(tweet_id=tweet_id)
         print(f"CommentListCreateAPIView: Queryset contains {queryset.count()} comments.")
         return queryset
     
     def perform_create(self, serializer):
         tweet_id = self.kwargs['tweet_id']
-        tweet = get_object_or_404(Tweet, id=tweet_id)
+        tweet = CommentService.get_tweet_for_comment(tweet_id=tweet_id)
         serializer.save(user=self.request.user, tweet=tweet)
         
 class FollowToggleAPIView(APIView):
@@ -150,15 +150,18 @@ class FollowToggleAPIView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     
     def post(self, request, user_id):
-        followed_user = get_object_or_404(User, id=user_id)
-        if request.user == followed_user:
-            return Response({'detail': 'Cannot follow yourself. '}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            follow, created = Follow.objects.get_or_create(follower=request.user, followed=followed_user)
-        except IntegrityError:
+            is_followed = FollowService.toggle_follow(
+                follower=request.user,
+                user_id=user_id,
+            )
+        except FollowYourselfError:
+            return Response({'detail': 'Cannot follow yourself. '}, status=status.HTTP_400_BAD_REQUEST)
+
+        if is_followed is None:
             return Response({'detail': 'Already following this user.'}, status=status.HTTP_409_CONFLICT)
-        
-        if not created:
-            follow.delete()
+
+        if not is_followed:
             return Response({'detail': 'unfollowed'}, status=status.HTTP_204_NO_CONTENT)
+
         return Response({'detail': 'Followed successfully'}, status=status.HTTP_201_CREATED)
