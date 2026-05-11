@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.contrib.auth import get_user_model
-
+from django.views.generic import TemplateView
 
 from .pagination import CustomCursorPagination
 from .models import Tweet
@@ -194,3 +194,9 @@ class FeedTweetListAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         return TweetService.list_feed_tweets(user=self.request.user)
+
+
+class AppTemplateView(TemplateView):
+    """Serves the single-page web UI that talks to `/api/`."""
+
+    template_name = "tweet/app.html"
