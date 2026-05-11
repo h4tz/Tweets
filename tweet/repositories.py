@@ -15,11 +15,20 @@ class TweetRepository:
     def get_tweet_by_id(tweet_id):
         return get_object_or_404(Tweet, id=tweet_id)
 
+    @staticmethod
+    def list_feed_tweets(user):
+        followed_ids = Follow.objects.filter(follower=user).values_list("followed_id", flat=True)
+        return Tweet.objects.filter(user_id__in=followed_ids).order_by("-created_at")
+
 
 class CommentRepository:
     @staticmethod
     def list_comments_by_tweet(tweet_id):
         return Comment.objects.filter(tweet_id=tweet_id).order_by("-created_at")
+
+    @staticmethod
+    def get_comment_by_id(comment_id):
+        return get_object_or_404(Comment, id=comment_id)
 
 
 class LikeRepository:
