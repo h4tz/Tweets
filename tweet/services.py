@@ -28,6 +28,10 @@ class TweetService:
     def get_tweet(tweet_id):
         return TweetRepository.get_tweet_by_id(tweet_id)
 
+    @staticmethod
+    def list_feed_tweets(user):
+        return TweetRepository.list_feed_tweets(user=user)
+
 
 class LikeService:
     @staticmethod
@@ -44,6 +48,10 @@ class CommentService:
     @staticmethod
     def get_tweet_for_comment(tweet_id):
         return TweetRepository.get_tweet_by_id(tweet_id=tweet_id)
+
+    @staticmethod
+    def get_comment(comment_id):
+        return CommentRepository.get_comment_by_id(comment_id=comment_id)
 
 
 class FollowService:
