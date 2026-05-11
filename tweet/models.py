@@ -9,7 +9,7 @@ class Tweet(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name ='Updated At')
     
     def __str__(self):
-        return f'Tweet by {Self.user.username} at {self.created_at.strftime("%Y-%m-%d %H:%M")}'
+        return f'Tweet by {self.user.username} at {self.created_at.strftime("%Y-%m-%d %H:%M")}'
     
     class Meta:
         ordering = ['-created_at']
@@ -20,7 +20,7 @@ class Like(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Liked At')
     
     def __str__(self):
-        return f'{Self.user.username} likes tweet ID {self.tweet.id}'
+        return f'{self.user.username} likes tweet ID {self.tweet.id}'
     
     class Meta:
         unique_together = ('user', 'tweet')
