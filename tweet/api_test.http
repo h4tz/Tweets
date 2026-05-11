@@ -61,3 +61,15 @@ Accept: application/json
 POST {{host}}/api/users/2/follow/
 Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
+
+### Request 10: Get authenticated user profile
+GET {{host}}/api/me/
+Authorization: Bearer {{jwt_token}}
+
+### Request 11: Get followed users feed
+GET {{host}}/api/feed/
+Authorization: Bearer {{jwt_token}}
+
+### Request 12: Get another user profile
+GET {{host}}/api/users/2/
+Authorization: Bearer {{jwt_token}}
