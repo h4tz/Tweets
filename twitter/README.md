@@ -47,6 +47,8 @@ This is a simple Twitter clone API built with Django and Django REST Framework.
     python manage.py runserver
     ```
 
+7.  **Open the web UI (same origin as the API):** [http://127.0.0.1:8000/](http://127.0.0.1:8000/) — register, log in, and use every `/api/` feature from the browser.
+
 ## API Documentation
 
 The interactive API documentation (Swagger UI) is available at:
