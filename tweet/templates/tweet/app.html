@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Twitter Clone</title>
+  <link rel="stylesheet" href="{% static 'tweet/app.css' %}">
+</head>
+<body>
+  <div id="app">
+    <header class="site-header">
+      <h1 class="logo">Chirp</h1>
+      <nav class="header-actions" id="header-actions"></nav>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar" id="sidebar"></aside>
+      <section class="content">
+        <div id="guest-panel" class="panel hidden"></div>
+        <div id="auth-panel" class="panel hidden"></div>
+        <div id="toast" class="toast hidden" role="status"></div>
+      </section>
+    </main>
+
+    <div id="modal-root" class="modal-root hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal></div>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <header class="modal-header">
+          <h2 id="modal-title">Tweet</h2>
+          <button type="button" class="btn btn-ghost" data-close-modal aria-label="Close">×</button>
+        </header>
+        <div id="modal-body" class="modal-body"></div>
+      </div>
+    </div>
+  </div>
+  <script src="{% static 'tweet/app.js' %}" defer></script>
+</body>
+</html>
