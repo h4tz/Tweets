@@ -198,5 +198,6 @@ class FeedTweetListAPIView(generics.ListAPIView):
 
 class AppTemplateView(TemplateView):
     """Serves the single-page web UI that talks to `/api/`."""
+    #static files are served by nginx, so this view is only responsible for serving the HTML template
 
     template_name = "tweet/app.html"
