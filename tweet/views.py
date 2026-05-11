@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, serializers, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -9,8 +9,9 @@ from django.contrib.auth import get_user_model
 from .pagination import CustomCursorPagination
 from .models import Tweet
 from .serializers import (
-    TweetSerializer,
     CommentSerializer,
+    TweetSerializer,
+    UserProfileSerializer,
     UserSerializer,
 )
 from .services import (
@@ -93,10 +94,7 @@ class TweetListCreateAPIView(generics.ListCreateAPIView):
     pagination_class = CustomCursorPagination
 
     def get_queryset(self):
-        print("TweetListCreateAPIView: Fetching all tweets.")
-        queryset = TweetService.list_tweets()
-        print(f"TweetListCreateAPIView: Queryset contains {queryset.count()} tweets.")
-        return queryset
+        return TweetService.list_tweets()
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -132,16 +130,19 @@ class CommentListCreateAPIView(generics.ListCreateAPIView):
     pagination_class = CustomCursorPagination
     
     def get_queryset(self):
-        print("CommentListCreateAPIView: Fetching comments for a tweet.")
         tweet_id = self.kwargs['tweet_id']
-        queryset = CommentService.list_comments_by_tweet(tweet_id=tweet_id)
-        print(f"CommentListCreateAPIView: Queryset contains {queryset.count()} comments.")
-        return queryset
+        return CommentService.list_comments_by_tweet(tweet_id=tweet_id)
     
     def perform_create(self, serializer):
         tweet_id = self.kwargs['tweet_id']
         tweet = CommentService.get_tweet_for_comment(tweet_id=tweet_id)
-        serializer.save(user=self.request.user, tweet=tweet)
+        parent_comment_id = self.request.data.get('parent_comment')
+        parent_comment = None
+        if parent_comment_id is not None:
+            parent_comment = CommentService.get_comment(comment_id=parent_comment_id)
+            if parent_comment.tweet_id != tweet.id:
+                raise serializers.ValidationError({'parent_comment': 'Parent comment must belong to the same tweet.'})
+        serializer.save(user=self.request.user, tweet=tweet, parent_comment=parent_comment)
         
 class FollowToggleAPIView(APIView):
     """
@@ -165,3 +166,31 @@ class FollowToggleAPIView(APIView):
             return Response({'detail': 'unfollowed'}, status=status.HTTP_204_NO_CONTENT)
 
         return Response({'detail': 'Followed successfully'}, status=status.HTTP_201_CREATED)
+
+
+class MeAPIView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        serializer = UserProfileSerializer(request.user, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserProfileAPIView(generics.RetrieveAPIView):
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    serializer_class = UserProfileSerializer
+    queryset = User.objects.all()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
+
+class FeedTweetListAPIView(generics.ListAPIView):
+    serializer_class = TweetSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = CustomCursorPagination
+
+    def get_queryset(self):
+        return TweetService.list_feed_tweets(user=self.request.user)
