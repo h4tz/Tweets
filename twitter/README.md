@@ -6,8 +6,10 @@ This is a simple Twitter clone API built with Django and Django REST Framework.
 ## Features
 
 - User registration and JWT authentication.
-- Create, read tweets.
-- Like, comment on tweets.
+- User profile and "me" endpoint with follower/following stats.
+- Create, list, update, delete tweets.
+- Personal feed endpoint with tweets from followed users.
+- Like, comment, and threaded replies on tweets.
 - Follow/unfollow users.
 
 ## Setup and Installation
@@ -59,8 +61,11 @@ A brief overview of the available endpoints. For detailed information and to try
 
 *   `/api/register/`: `POST` - Register a new user.
 *   `/api/login/`: `POST` - Log in and receive JWT tokens.
+*   `/api/me/`: `GET` - Retrieve the authenticated user's profile.
+*   `/api/feed/`: `GET` - Retrieve tweets from users you follow.
 *   `/api/tweets/`: `GET`, `POST` - List all tweets or create a new one.
-*   `/api/tweets/<id>/`: `GET` - Retrieve a single tweet.
+*   `/api/tweets/<id>/`: `GET`, `PATCH`, `DELETE` - Retrieve, update, or delete a single tweet.
 *   `/api/tweets/<id>/like/`: `POST` - Like or unlike a tweet.
-*   `/api/tweets/<id>/comments/`: `POST` - Add a comment to a tweet.
+*   `/api/tweets/<id>/comments/`: `GET`, `POST` - List or add comments to a tweet (`parent_comment` optional for replies).
 *   `/api/users/<id>/follow/`: `POST` - Follow or unfollow a user.
+*   `/api/users/<id>/`: `GET` - Retrieve a user's profile and follow stats.
