@@ -41,6 +41,8 @@ export function decodeCursor(raw?: string): Cursor | null {
 
 interface PaginateArgs<T, W> {
   cursor: Cursor | null;
+  /** filter applied on every page (ANDed with cursor conditions) */
+  baseWhere?: W;
   /** "older than cursor" filter for the default direction */
   whereOlder: (c: Cursor) => W;
   /** "newer than cursor" filter for the reverse direction */
@@ -78,8 +80,15 @@ export async function paginate<T extends { id: number; createdAt: Date }, W>(
     take: PAGE_SIZE + 1,
     orderBy,
   };
-  if (args.cursor) {
-    findArgs.where = dir === 'p' ? args.whereNewer(args.cursor) : args.whereOlder(args.cursor);
+  const cursorWhere = args.cursor
+    ? dir === 'p'
+      ? args.whereNewer(args.cursor)
+      : args.whereOlder(args.cursor)
+    : undefined;
+  if (args.baseWhere && cursorWhere) {
+    findArgs.where = { AND: [args.baseWhere, cursorWhere] } as W;
+  } else if (args.baseWhere || cursorWhere) {
+    findArgs.where = (args.baseWhere ?? cursorWhere) as W;
   }
 
   let rows = await args.findMany(findArgs);

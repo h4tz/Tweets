@@ -17,15 +17,14 @@ export const CommentRepository = {
     return paginate<CommentWithRelations, Record<string, unknown>>({
       cursor,
       baseUrl: `/api/tweets/${tweetId}/comments/`,
+      baseWhere: { tweetId },
       whereOlder: (c) => ({
-        tweetId,
         OR: [
           { createdAt: { lt: new Date(c.t) } },
           { createdAt: new Date(c.t), id: { lt: c.id } },
         ],
       }),
       whereNewer: (c) => ({
-        tweetId,
         OR: [
           { createdAt: { gt: new Date(c.t) } },
           { createdAt: new Date(c.t), id: { gt: c.id } },
