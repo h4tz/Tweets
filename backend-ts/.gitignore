@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Local SQLite databases (Prisma)
+*.db
+*.db-journal
+prisma/dev.db*
