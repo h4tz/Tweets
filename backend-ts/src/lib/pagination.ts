@@ -8,7 +8,7 @@ export const PAGE_SIZE = 20;
 
 type Dir = 'n' | 'p';
 
-interface Cursor {
+export interface Cursor {
   /** created_at of the boundary item */
   t: string;
   /** id of the boundary item (tie-breaker) */

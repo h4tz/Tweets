@@ -13,6 +13,7 @@ app.use(
 );
 
 import { authRouter } from './modules/auth/auth.routes';
+import { tweetsRouter } from './modules/tweets/tweets.routes';
 import { usersRouter } from './modules/users/users.routes';
 
 app.get('/api/health/', (_req, res) => {
@@ -21,6 +22,7 @@ app.get('/api/health/', (_req, res) => {
 
 app.use('/api', authRouter);
 app.use('/api', usersRouter);
+app.use('/api', tweetsRouter);
 
 // 404 + error handlers must be registered last
 app.use((_req, res) => {
