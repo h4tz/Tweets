@@ -13,12 +13,14 @@ app.use(
 );
 
 import { authRouter } from './modules/auth/auth.routes';
+import { usersRouter } from './modules/users/users.routes';
 
 app.get('/api/health/', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
 app.use('/api', authRouter);
+app.use('/api', usersRouter);
 
 // 404 + error handlers must be registered last
 app.use((_req, res) => {
