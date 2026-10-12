@@ -44,4 +44,9 @@ public class Tweet {
   public String getContent() { return content; }
   public Instant getCreatedAt() { return createdAt; }
   public Instant getUpdatedAt() { return updatedAt; }
+
+  public void setContent(String content) {
+    this.content = content;
+    this.updatedAt = Instant.now();
+  }
 }
