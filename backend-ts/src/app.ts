@@ -14,6 +14,7 @@ app.use(
 
 import { authRouter } from './modules/auth/auth.routes';
 import { commentsRouter } from './modules/comments/comments.routes';
+import { feedRouter } from './modules/feed/feed.routes';
 import { followsRouter } from './modules/follows/follows.routes';
 import { likesRouter } from './modules/likes/likes.routes';
 import { tweetsRouter } from './modules/tweets/tweets.routes';
@@ -29,6 +30,7 @@ app.use('/api', tweetsRouter);
 app.use('/api', likesRouter);
 app.use('/api', commentsRouter);
 app.use('/api', followsRouter);
+app.use('/api', feedRouter);
 
 // 404 + error handlers must be registered last
 app.use((_req, res) => {
