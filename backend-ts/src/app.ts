@@ -12,11 +12,13 @@ app.use(
   }),
 );
 
+import { authRouter } from './modules/auth/auth.routes';
+
 app.get('/api/health/', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-// routers are mounted here as each API module lands (see src/modules/*)
+app.use('/api', authRouter);
 
 // 404 + error handlers must be registered last
 app.use((_req, res) => {
