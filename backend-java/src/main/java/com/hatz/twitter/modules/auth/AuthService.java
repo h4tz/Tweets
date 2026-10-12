@@ -77,15 +77,24 @@ public class AuthService {
     return jwtService.generateTokens(user.getId());
   }
 
-  /** Mirrors simplejwt refresh: valid refresh token -> fresh token pair. */
+  /**
+   * Mirrors simplejwt refresh: valid refresh token -> fresh token pair. An
+   * invalid/expired token returns the same {refresh, access} body shape as
+   * Django's RefreshView (with null values), not a bare {detail} error.
+   */
   public JwtService.Tokens refresh(String refreshToken) {
-    if (refreshToken == null || refreshToken.isBlank()) {
-      throw ApiError.detail(401, "Token is invalid or expired");
-    }
-    Long userId = jwtService.parseRefresh(refreshToken);
+    Long userId =
+        (refreshToken == null || refreshToken.isBlank()) ? null : jwtService.parseRefresh(refreshToken);
     if (userId == null || !userRepository.existsById(userId)) {
-      throw ApiError.detail(401, "Token is invalid or expired");
+      throw new InvalidRefreshToken();
     }
     return jwtService.generateTokens(userId);
+  }
+
+  /** Raised when the refresh token is invalid/expired/unknown. */
+  public static class InvalidRefreshToken extends RuntimeException {
+    public InvalidRefreshToken() {
+      super("Token is invalid or expired");
+    }
   }
 }

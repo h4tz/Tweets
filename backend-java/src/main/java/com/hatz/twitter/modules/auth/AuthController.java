@@ -2,6 +2,8 @@ package com.hatz.twitter.modules.auth;
 
 import com.hatz.twitter.modules.users.UserResponse;
 import com.hatz.twitter.security.JwtService;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -54,9 +56,20 @@ public class AuthController {
     return authService.login(new AuthService.LoginRequest(body.username(), body.password()));
   }
 
-  // POST /api/refresh/
+  // POST /api/refresh/ — invalid/expired token yields nulls like simplejwt
   @PostMapping("/refresh")
-  public JwtService.Tokens refresh(@Valid @RequestBody RefreshBody body) {
-    return authService.refresh(body.refresh());
+  public ResponseEntity<Map<String, String>> refresh(@Valid @RequestBody RefreshBody body) {
+    try {
+      JwtService.Tokens tokens = authService.refresh(body.refresh());
+      Map<String, String> body2 = new LinkedHashMap<>();
+      body2.put("refresh", tokens.refresh());
+      body2.put("access", tokens.access());
+      return ResponseEntity.ok(body2);
+    } catch (AuthService.InvalidRefreshToken e) {
+      Map<String, String> nulls = new LinkedHashMap<>();
+      nulls.put("refresh", null);
+      nulls.put("access", null);
+      return ResponseEntity.ok(nulls);
+    }
   }
 }
