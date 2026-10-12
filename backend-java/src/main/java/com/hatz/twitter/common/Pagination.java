@@ -49,11 +49,12 @@ public final class Pagination {
       spec = baseSpec == null ? cursorSpec : baseSpec.and(cursorSpec);
     }
 
-    List<T> rows = finder.find(spec, PageRequest.of(0, PAGE_SIZE + 1, sort));
-    boolean moreInFetchDirection = rows.size() > PAGE_SIZE;
-    if (moreInFetchDirection) {
-      rows = rows.subList(0, PAGE_SIZE);
-    }
+    List<T> found = finder.find(spec, PageRequest.of(0, PAGE_SIZE + 1, sort));
+    boolean moreInFetchDirection = found.size() > PAGE_SIZE;
+    // Spring Data's Page.getContent() may be immutable — copy before slicing/reversing
+    List<T> rows =
+        new java.util.ArrayList<>(
+            moreInFetchDirection ? found.subList(0, PAGE_SIZE) : found);
     if (rows.isEmpty()) {
       return new Page<>(null, null, List.of());
     }

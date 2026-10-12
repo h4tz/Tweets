@@ -46,6 +46,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/register/**", "/api/login/**", "/api/refresh/**")
                 .permitAll()
                 .requestMatchers("/api/health/**").permitAll()
+                // the servlet error dispatch (/error) must not be blocked by auth,
+                // otherwise a thrown exception resurfaces as a bogus 401
+                .requestMatchers("/error").permitAll()
                 // public reads
                 .requestMatchers(HttpMethod.GET, "/api/tweets/**", "/api/users/**", "/api/feed/**")
                 .permitAll()
