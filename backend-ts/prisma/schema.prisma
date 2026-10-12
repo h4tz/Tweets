@@ -1,0 +1,88 @@
+// Prisma schema mirroring the Django models in tweet/models.py
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tweets   Tweet[]
+  likes    Like[]
+  comments Comment[]
+
+  // Follow rows where this user is the follower (users they follow)
+  following Follow[] @relation("follower")
+  // Follow rows where this user is followed (their followers)
+  followers Follow[] @relation("followed")
+
+  @@map("users")
+}
+
+model Tweet {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes    Like[]
+  comments Comment[]
+
+  @@index([userId])
+  @@map("tweets")
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  tweetId   Int
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tweet Tweet @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tweetId])
+  @@map("likes")
+}
+
+model Comment {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  tweetId         Int
+  parentCommentId Int?
+  content         String
+  createdAt       DateTime @default(now())
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tweet         Tweet     @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+  parentComment Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies       Comment[] @relation("CommentReplies")
+
+  @@index([tweetId])
+  @@index([parentCommentId])
+  @@map("comments")
+}
+
+model Follow {
+  id         Int      @id @default(autoincrement())
+  followerId Int
+  followedId Int
+  createdAt  DateTime @default(now())
+
+  follower User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followed User @relation("followed", fields: [followedId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followedId])
+  @@map("follows")
+}
