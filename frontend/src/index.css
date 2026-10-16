@@ -372,4 +372,47 @@
     transform: translateY(-2px);
   }
 
+  /* ---------- segmented tab control ---------- */
+  .segmented {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0.25rem;
+    border-radius: 9999px;
+    border: 1px solid var(--hairline);
+    background: var(--field);
+  }
+
+  .segmented__thumb {
+    position: absolute;
+    top: 0.25rem;
+    bottom: 0.25rem;
+    left: 0.25rem;
+    width: calc(50% - 0.25rem);
+    border-radius: 9999px;
+    background: var(--btn);
+    box-shadow: 0 6px 18px -8px rgba(15, 15, 18, 0.6);
+    transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .segmented__thumb[data-mode='signup'] {
+    transform: translateX(100%);
+  }
+
+  .segmented__option {
+    position: relative;
+    z-index: 1;
+    padding: 0.6rem 0;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--ink-soft);
+    transition: color 300ms ease-out;
+  }
+
+  .segmented__option[aria-selected='true'] {
+    color: var(--btn-ink);
+  }
+
   }
