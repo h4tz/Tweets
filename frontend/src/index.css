@@ -2,16 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  :root {
+    /* light "warm stone" theme (default) */
+    --bg: #f9f8f6;
+    --surface: rgba(255, 255, 255, 0.62);
+    --surface-strong: rgba(255, 255, 255, 0.86);
+    --ink: #14141a;
+    --ink-soft: #5b5b66;
+    --ink-faint: #9a9aa4;
+    --hairline: rgba(20, 20, 26, 0.08);
+    --hairline-strong: rgba(20, 20, 26, 0.14);
+    --accent: #3f3d80;
+    --accent-soft: #8b87c9;
+    --aura-1: rgba(139, 135, 201, 0.5);
+    --aura-2: rgba(224, 178, 122, 0.42);
+    --aura-3: rgba(216, 214, 236, 0.75);
+    --field: rgba(255, 255, 255, 0.55);
+    --btn: #14141a;
+    --btn-ink: #f9f8f6;
+    --glow: rgba(139, 135, 201, 0.35);
+  }
+
+  html.dark {
+    /* deep midnight obsidian theme */
+    --bg: #0f0f12;
+    --surface: rgba(255, 255, 255, 0.045);
+    --surface-strong: rgba(255, 255, 255, 0.07);
+    --ink: #f4f3f7;
+    --ink-soft: #a5a4b0;
+    --ink-faint: #6c6b78;
+    --hairline: rgba(255, 255, 255, 0.08);
+    --hairline-strong: rgba(255, 255, 255, 0.16);
+    --accent: #b9b5ee;
+    --accent-soft: #8b87c9;
+    --aura-1: rgba(129, 124, 214, 0.42);
+    --aura-2: rgba(196, 148, 88, 0.28);
+    --aura-3: rgba(58, 56, 92, 0.55);
+    --field: rgba(255, 255, 255, 0.04);
+    --btn: #f4f3f7;
+    --btn-ink: #0f0f12;
+    --glow: rgba(139, 135, 201, 0.28);
+  }
+
+  * {
+    border-color: var(--hairline);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'ss01', 'cv11';
+    transition: background-color 600ms cubic-bezier(0.16, 1, 0.3, 1),
+      color 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--bg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent-soft);
+    outline-offset: 2px;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer components {
 }
