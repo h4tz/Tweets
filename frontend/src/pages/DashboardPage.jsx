@@ -1,113 +1,153 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
+import { Monogram, ArrowRight } from '../components/Icons'
 
 export default function DashboardPage() {
-  const { user, token, logout, getProfile } = useAuthStore()
-  const [profileData, setProfileData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { user, token, isGuest, logout, getProfile } = useAuthStore()
+  const [loading, setLoading] = useState(!isGuest)
   const navigate = useNavigate()
 
   useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        await getProfile()
-      } catch (error) {
-        console.error('Failed to load profile:', error)
-      } finally {
-        setLoading(false)
-      }
+    if (isGuest) {
+      setLoading(false)
+      return undefined
     }
+    let active = true
+    getProfile().finally(() => {
+      if (active) setLoading(false)
+    })
+    return () => {
+      active = false
+    }
+  }, [isGuest, getProfile])
 
-    loadProfile()
-  }, [])
-
-  const handleLogout = () => {
+  const handleExit = () => {
     logout()
     navigate('/')
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      <div className="grid min-h-screen place-items-center" style={{ background: 'var(--bg)' }}>
+        <span
+          className="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"
+          style={{ borderColor: 'var(--accent-soft)', borderTopColor: 'transparent' }}
+          role="status"
+          aria-label="Loading"
+        />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                Logout
-              </button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">User Information</h2>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Email</label>
-                    <p className="mt-1 text-sm text-gray-900">{user?.email}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Username</label>
-                    <p className="mt-1 text-sm text-gray-900">{user?.username}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Full Name</label>
-                    <p className="mt-1 text-sm text-gray-900">
-                      {user?.first_name} {user?.last_name}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Account Status</label>
-                    <p className="mt-1 text-sm text-gray-900">
-                      {user?.is_active ? 'Active' : 'Inactive'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">API Information</h2>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">JWT Token</label>
-                    <p className="mt-1 text-sm text-gray-900 font-mono">
-                      {token ? 'Token available' : 'No token'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">API Endpoint</label>
-                    <p className="mt-1 text-sm text-gray-900">http://localhost:8000/api/v1/</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Authentication</label>
-                    <p className="mt-1 text-sm text-gray-900">Bearer Token</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-6 bg-blue-50 p-6 rounded-lg">
-              <h2 className="text-xl font-semibold text-blue-900 mb-2">Backend Status</h2>
-              <p className="text-blue-800">
-                This is Phase 1 of the chat backend. Only authentication is implemented.
-                The next phase will include chat functionality.
-              </p>
-            </div>
-          </div>
-        </div>
+    <div className="relative min-h-screen" style={{ background: 'var(--bg)', color: 'var(--ink)' }}>
+      <div className="aura" aria-hidden="true">
+        <span className="aura__orb aura__orb--1" />
+        <span className="aura__orb aura__orb--2" />
+        <span className="aura__orb aura__orb--3" />
       </div>
+      <div className="grain" aria-hidden="true" />
+
+      <div className="relative z-10 mx-auto max-w-4xl px-6 py-10 sm:px-10">
+        <header className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Monogram className="h-8 w-8" style={{ color: 'var(--ink)' }} />
+            <span className="font-display text-lg tracking-wide">Aurelia</span>
+          </div>
+          <button type="button" onClick={handleExit} className="btn-ghost px-5 py-2 text-[0.8rem] font-medium">
+            {isGuest ? 'Leave guest mode' : 'Log out'}
+          </button>
+        </header>
+
+        <section className="glass glass-sheen mt-12 rounded-[1.75rem] p-8 sm:p-10">
+          <p
+            className="text-[0.68rem] font-medium uppercase tracking-[0.3em]"
+            style={{ color: 'var(--ink-faint)' }}
+          >
+            {isGuest ? 'Guest session' : 'Signed in'}
+          </p>
+
+          <h1 className="mt-3 font-display text-[clamp(2rem,4vw,2.75rem)] leading-tight">
+            {isGuest ? (
+              <>
+                You're exploring as a <em className="italic" style={{ color: 'var(--accent)' }}>guest</em>
+              </>
+            ) : (
+              <>
+                Welcome,{' '}
+                <em className="italic" style={{ color: 'var(--accent)' }}>
+                  {user?.first_name || user?.username || user?.email || 'friend'}
+                </em>
+              </>
+            )}
+          </h1>
+
+          <p className="mt-4 max-w-lg text-[0.95rem] leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+            {isGuest
+              ? 'Nothing you do here is saved. Create an account when you\'re ready to keep your timeline, drafts and settings.'
+              : 'This is the authenticated shell. Authentication is the only backend slice implemented so far — the timeline arrives in the next phase.'}
+          </p>
+
+          {isGuest && (
+            <button
+              type="button"
+              onClick={handleExit}
+              className="btn-primary mt-7 inline-flex items-center gap-2 px-6 py-3 text-[0.88rem] font-semibold"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                Create an account
+                <ArrowRight className="h-4 w-4" />
+              </span>
+            </button>
+          )}
+        </section>
+
+        {!isGuest && (
+          <section className="mt-6 grid gap-6 sm:grid-cols-2">
+            <div className="glass rounded-[1.5rem] p-6">
+              <h2 className="text-[0.68rem] font-medium uppercase tracking-[0.28em]" style={{ color: 'var(--ink-faint)' }}>
+                Account
+              </h2>
+              <dl className="mt-4 space-y-3 text-[0.88rem]">
+                <Row label="Email" value={user?.email} />
+                <Row label="Username" value={user?.username} />
+                <Row
+                  label="Name"
+                  value={[user?.first_name, user?.last_name].filter(Boolean).join(' ') || '—'}
+                />
+                <Row label="Status" value={user?.is_active ? 'Active' : 'Inactive'} />
+              </dl>
+            </div>
+
+            <div className="glass rounded-[1.5rem] p-6">
+              <h2 className="text-[0.68rem] font-medium uppercase tracking-[0.28em]" style={{ color: 'var(--ink-faint)' }}>
+                Session
+              </h2>
+              <dl className="mt-4 space-y-3 text-[0.88rem]">
+                <Row label="API" value="http://localhost:8000/api/v1/" mono />
+                <Row label="Auth" value="Bearer token" />
+                <Row label="Token" value={token ? 'present' : 'missing'} />
+                <Row label="Phase" value="01 — authentication" />
+              </dl>
+            </div>
+          </section>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function Row({ label, value, mono = false }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4">
+      <dt style={{ color: 'var(--ink-faint)' }}>{label}</dt>
+      <dd
+        className={`text-right ${mono ? 'text-[0.75rem]' : ''}`}
+        style={{ color: 'var(--ink)', wordBreak: 'break-word' }}
+      >
+        {value || '—'}
+      </dd>
     </div>
   )
 }
