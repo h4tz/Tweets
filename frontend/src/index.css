@@ -415,4 +415,33 @@
     color: var(--btn-ink);
   }
 
+  /* ---------- misc ---------- */
+  .word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
   }
+
+  .word > span {
+    display: inline-block;
+    animation: fade-up 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .reveal {
+    animation: blur-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .divider-text {
+    color: var(--ink-faint);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
