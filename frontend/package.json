@@ -1,14 +1,17 @@
 {
-  "name": "chat-frontend",
+  "name": "aurelia-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "preview": "vite preview",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "test:smoke": "esbuild tests/auth-smoke.jsx --bundle --platform=node --format=cjs --jsx=automatic --external:jsdom --outfile=node_modules/.cache/auth-smoke.cjs --log-level=warning && node node_modules/.cache/auth-smoke.cjs"
   },
   "dependencies": {
+    "framer-motion": "^11.18.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.0",
@@ -19,10 +22,12 @@
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.14",
+    "esbuild": "^0.21.5",
     "eslint": "^8.45.0",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
+    "jsdom": "^24.1.0",
     "postcss": "^8.4.27",
     "tailwindcss": "^3.3.1",
     "vite": "^4.4.0"
